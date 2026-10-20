@@ -3,36 +3,44 @@
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLiveQuery } from "dexie-react-hooks";
-import { PrendaForm, type DatosPrenda } from "@/components/PrendaForm";
-import { db } from "@/lib/db";
-import { useBlobUrl } from "@/lib/useBlobUrl";
+import { PrendaForm } from "@/components/PrendaForm";
+import { actualizarPrenda, borrarPrenda, obtenerPrenda, urlsDeImagenes, type DatosPrenda, type Prenda } from "@/lib/prendas";
 
 export default function DetallePrenda({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const prenda = useLiveQuery(async () => (await db.prendas.get(id)) ?? null, [id]);
+  const [prenda, setPrenda] = useState<Prenda | null>();
   const [datos, setDatos] = useState<DatosPrenda>();
-  const url = useBlobUrl(prenda?.imagen);
+  const [url, setUrl] = useState<string>();
+  const [ocupado, setOcupado] = useState(false);
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
-    if (prenda && !datos) {
-      const { nombre, categoria, tipo, colores, temporadas, estilos } = prenda;
-      setDatos({ nombre, categoria, tipo, colores, temporadas, estilos });
+    obtenerPrenda(id)
+      .then(async (p) => {
+        setPrenda(p);
+        if (!p) return;
+        const { nombre, categoria, tipo, colores, temporadas, estilos } = p;
+        setDatos({ nombre, categoria, tipo, colores, temporadas, estilos });
+        setUrl((await urlsDeImagenes([p.imagen_path]))[p.imagen_path]);
+      })
+      .catch((e: Error) => setError(e.message));
+  }, [id]);
+
+  async function ejecutar(accion: () => Promise<void>) {
+    setOcupado(true);
+    setError(undefined);
+    try {
+      await accion();
+      router.push("/");
+    } catch (e) {
+      setError((e as Error).message);
+      setOcupado(false);
     }
-  }, [prenda, datos]);
-
-  async function guardar() {
-    if (!datos) return;
-    await db.prendas.update(id, datos);
-    router.push("/");
   }
 
-  async function borrar() {
-    if (!confirm("¿Borrar esta prenda del armario?")) return;
-    await db.prendas.delete(id);
-    router.push("/");
-  }
+  const guardar = () => datos && ejecutar(() => actualizarPrenda(id, datos));
+  const borrar = () => prenda && confirm("¿Borrar esta prenda del armario?") && ejecutar(() => borrarPrenda(prenda));
 
   if (prenda === null) {
     return (
@@ -51,7 +59,7 @@ export default function DetallePrenda({ params }: { params: Promise<{ id: string
         <Link href="/" className="text-muted">
           ← Armario
         </Link>
-        <button onClick={borrar} className="text-sm text-danger">
+        <button onClick={borrar} disabled={!prenda || ocupado} className="text-sm text-danger disabled:opacity-40">
           Borrar
         </button>
       </header>
@@ -60,10 +68,16 @@ export default function DetallePrenda({ params }: { params: Promise<{ id: string
         {url && <img src={url} alt={prenda?.nombre} className="h-full w-full object-contain p-4" />}
       </div>
 
+      {error && <p className="mb-4 rounded-xl bg-warn px-3 py-2 text-sm">{error}</p>}
+
       {datos && (
         <>
           <PrendaForm datos={datos} onChange={setDatos} />
-          <button onClick={guardar} className="mt-8 w-full rounded-2xl bg-foreground py-3.5 font-medium text-background">
+          <button
+            onClick={guardar}
+            disabled={ocupado}
+            className="mt-8 w-full rounded-2xl bg-foreground py-3.5 font-medium text-background disabled:opacity-40"
+          >
             Guardar cambios
           </button>
         </>

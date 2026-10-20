@@ -1,10 +1,8 @@
 "use client";
 
 import { CATEGORIAS, ESTILOS, TEMPORADAS, etiqueta } from "@/lib/categories";
-import type { Prenda } from "@/lib/db";
+import type { DatosPrenda } from "@/lib/prendas";
 import { Chips } from "./Chips";
-
-export type DatosPrenda = Pick<Prenda, "nombre" | "categoria" | "tipo" | "colores" | "temporadas" | "estilos">;
 
 export const DATOS_VACIOS: DatosPrenda = {
   nombre: "",

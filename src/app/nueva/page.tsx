@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { DATOS_VACIOS, PrendaForm, type DatosPrenda } from "@/components/PrendaForm";
-import { db } from "@/lib/db";
-import { blobABase64, quitarFondo, reducirImagen } from "@/lib/image";
+import { DATOS_VACIOS, PrendaForm } from "@/components/PrendaForm";
+import { quitarFondo, reducirImagen } from "@/lib/image";
+import { crearPrenda, type DatosPrenda } from "@/lib/prendas";
 import { useBlobUrl } from "@/lib/useBlobUrl";
 
 type Estado = "inicio" | "procesando" | "revision";
@@ -21,43 +21,38 @@ export default function NuevaPrenda() {
   const [usarRecorte, setUsarRecorte] = useState(true);
   const [datos, setDatos] = useState<DatosPrenda>(DATOS_VACIOS);
   const [progresoFondo, setProgresoFondo] = useState(0);
-  const [clasificando, setClasificando] = useState(false);
-  const [avisos, setAvisos] = useState<string[]>([]);
+  const [guardando, setGuardando] = useState(false);
+  const [aviso, setAviso] = useState<string>();
 
   const urlImagen = useBlobUrl(usarRecorte && recorte ? recorte : original);
 
   async function procesar(file: File) {
     setEstado("procesando");
-    setAvisos([]);
+    setAviso(undefined);
+    setRecorte(undefined);
+    setDatos(DATOS_VACIOS);
     setProgresoFondo(0);
     const reducida = await reducirImagen(file);
     setOriginal(reducida);
-
-    const fondo = quitarFondo(reducida, setProgresoFondo)
-      .then(setRecorte)
-      .catch(() => setAvisos((a) => [...a, "No se pudo quitar el fondo; se usará la foto original."]));
-
-    setClasificando(true);
-    const clasificacion = clasificar(reducida)
-      .then((d) => setDatos(d))
-      .catch((e: Error) => setAvisos((a) => [...a, `${e.message}. Rellena los datos a mano.`]))
-      .finally(() => setClasificando(false));
-
-    await fondo;
+    try {
+      setRecorte(await quitarFondo(reducida, setProgresoFondo));
+    } catch {
+      setAviso("No se pudo quitar el fondo; se usará la foto original.");
+    }
     setEstado("revision");
-    await clasificacion;
   }
 
   async function guardar() {
     if (!original) return;
-    await db.prendas.add({
-      id: crypto.randomUUID(),
-      imagen: usarRecorte && recorte ? recorte : original,
-      original,
-      ...datos,
-      creadaEn: Date.now(),
-    });
-    router.push("/");
+    setGuardando(true);
+    setAviso(undefined);
+    try {
+      await crearPrenda(datos, usarRecorte && recorte ? recorte : original, original);
+      router.push("/");
+    } catch (e) {
+      setAviso(`No se pudo guardar: ${(e as Error).message}`);
+      setGuardando(false);
+    }
   }
 
   return (
@@ -122,17 +117,9 @@ export default function NuevaPrenda() {
             </label>
           )}
 
-          {avisos.map((a) => (
-            <p key={a} className="rounded-xl bg-warn px-3 py-2 text-sm">
-              {a}
-            </p>
-          ))}
+          <PrendaForm datos={datos} onChange={setDatos} />
 
-          {clasificando ? (
-            <p className="py-6 text-center text-muted">Clasificando con IA…</p>
-          ) : (
-            <PrendaForm datos={datos} onChange={setDatos} />
-          )}
+          {aviso && <p className="rounded-xl bg-warn px-3 py-2 text-sm">{aviso}</p>}
 
           <div className="flex gap-3">
             <button onClick={() => setEstado("inicio")} className="flex-1 rounded-2xl border border-line py-3.5">
@@ -140,25 +127,14 @@ export default function NuevaPrenda() {
             </button>
             <button
               onClick={guardar}
-              disabled={clasificando}
+              disabled={guardando}
               className="flex-1 rounded-2xl bg-foreground py-3.5 font-medium text-background disabled:opacity-40"
             >
-              Guardar
+              {guardando ? "Guardando…" : "Guardar"}
             </button>
           </div>
         </div>
       )}
     </main>
   );
-}
-
-async function clasificar(imagen: Blob): Promise<DatosPrenda> {
-  const res = await fetch("/api/classify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ imagen: await blobABase64(imagen), mediaType: imagen.type }),
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(json.error ?? "No se pudo clasificar la prenda");
-  return json as DatosPrenda;
 }
