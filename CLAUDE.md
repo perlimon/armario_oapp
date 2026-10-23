@@ -19,6 +19,13 @@ App web progresiva (Next.js) para digitalizar el armario y, en fases posteriores
 - Se pide almacenamiento persistente (`navigator.storage.persist`) para que Safari no borre los datos.
 - Paso a Supabase: solo hay que reescribir `src/lib/prendas.ts` con las mismas funciones. Una versión ya hecha con Supabase (tabla, bucket, RLS y pantalla de entrada) está en el commit `7071344`.
 
+## Diseño (acordado con el usuario)
+
+- Minimalista y neutro. Fondo blanco roto `#faf8f5`, tarjetas arena `#efeae3`, texto espresso `#3b2f27`, moka `#7e6555` para el botón principal y el panel de la ficha, azul cielo `#a9c7e3` como acento (botón +, subrayado del título, selección).
+- Letra Jost. Tarjetas altas muy redondeadas con el nombre sobre la foto; elementos blancos flotantes con sombra suave; barra inferior flotante.
+- Sin patrones de fondo, sin arcos, sin estética "femenina". Propuesta visual: https://claude.ai/artifact/GVwCBmE22LLpzZPsH94drW
+- La función de "veces puesta" queda para la Fase 3.
+
 ## Estructura
 
 - `src/lib/prendas.ts`: todo el acceso a datos (único archivo que sabe dónde se guardan).

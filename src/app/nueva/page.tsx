@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { IconoAtras } from "@/components/Iconos";
 import { DATOS_VACIOS, PrendaForm } from "@/components/PrendaForm";
 import { quitarFondo, reducirImagen } from "@/lib/image";
 import { crearPrenda, type DatosPrenda } from "@/lib/prendas";
@@ -55,14 +56,29 @@ export default function NuevaPrenda() {
     }
   }
 
+  const pasos: { estado: Estado; nombre: string }[] = [
+    { estado: "inicio", nombre: "1 Foto" },
+    { estado: "procesando", nombre: "2 Recorte" },
+    { estado: "revision", nombre: "3 Detalles" },
+  ];
+
   return (
-    <main className="mx-auto max-w-lg px-4 pb-10 pt-6">
-      <header className="mb-6 flex items-center justify-between">
-        <Link href="/" className="text-muted">
-          ← Armario
+    <main className="mx-auto max-w-3xl px-5 pb-12 pt-10 md:px-12">
+      <header className="mb-8 flex items-center justify-between gap-4">
+        <Link href="/" aria-label="Volver al armario" className="flex size-13 items-center justify-center rounded-[18px] bg-white shadow-suave">
+          <IconoAtras />
         </Link>
-        <h1 className="text-lg font-semibold">Nueva prenda</h1>
-        <span className="w-16" />
+        <ol className="flex items-center gap-1 rounded-full bg-white p-1.5 text-[13px] shadow-suave">
+          {pasos.map((p) => (
+            <li
+              key={p.estado}
+              aria-current={estado === p.estado ? "step" : undefined}
+              className={`rounded-full px-3.5 py-2 ${estado === p.estado ? "bg-cielo-suave font-medium" : "text-muted"}`}
+            >
+              {p.nombre}
+            </li>
+          ))}
+        </ol>
       </header>
 
       <input
@@ -82,55 +98,54 @@ export default function NuevaPrenda() {
       />
 
       {estado === "inicio" && (
-        <div className="space-y-3">
-          <p className="mb-4 text-muted">
-            Pon la prenda sobre un fondo liso o colgada en una percha, con buena luz.
-          </p>
-          <button onClick={() => camara.current?.click()} className="w-full rounded-2xl bg-foreground py-4 font-medium text-background">
+        <div className="space-y-4">
+          <h1 className="text-[34px] font-medium leading-tight">Nueva prenda</h1>
+          <p className="mb-6 font-light text-muted">Ponla sobre un fondo liso o colgada en una percha, con buena luz.</p>
+          <button onClick={() => camara.current?.click()} className="h-15 w-full rounded-full bg-moka font-medium text-white">
             Hacer foto
           </button>
-          <button onClick={() => galeria.current?.click()} className="w-full rounded-2xl border border-line py-4 font-medium">
+          <button onClick={() => galeria.current?.click()} className="h-15 w-full rounded-full bg-white shadow-suave">
             Elegir de la galería
           </button>
         </div>
       )}
 
       {estado === "procesando" && (
-        <div className="space-y-4 py-10 text-center">
-          <p className="font-medium">Quitando el fondo…</p>
+        <div className="space-y-5 rounded-[40px] bg-white px-8 py-14 text-center shadow-suave">
+          <p className="text-lg font-medium">Quitando el fondo…</p>
           <div className="mx-auto h-2 w-full max-w-xs overflow-hidden rounded-full bg-surface">
-            <div className="h-full bg-foreground transition-all" style={{ width: `${Math.round(progresoFondo * 100)}%` }} />
+            <div className="h-full rounded-full bg-cielo transition-all" style={{ width: `${Math.round(progresoFondo * 100)}%` }} />
           </div>
-          <p className="text-sm text-muted">La primera vez tarda un poco más: se descarga el modelo al móvil.</p>
+          <p className="text-sm font-light text-muted">La primera vez tarda un poco más: se descarga el modelo.</p>
         </div>
       )}
 
       {estado === "revision" && (
-        <div className="space-y-6">
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-surface">
-            {urlImagen && <img src={urlImagen} alt="" className="h-full w-full object-contain p-4" />}
+        <div className="space-y-7">
+          <div className="relative mx-auto aspect-[30/38] w-full max-w-[300px] overflow-hidden rounded-[40px] bg-surface">
+            {urlImagen && <img src={urlImagen} alt="" className="h-full w-full object-contain p-6 pb-20" />}
+            {recorte && (
+              <label className="absolute inset-x-4 bottom-4 flex h-12 items-center justify-center gap-2.5 rounded-full bg-white/85 text-sm backdrop-blur">
+                <input type="checkbox" className="size-4.5 accent-moka" checked={usarRecorte} onChange={(e) => setUsarRecorte(e.target.checked)} />
+                Sin fondo
+              </label>
+            )}
           </div>
-          {recorte && (
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={usarRecorte} onChange={(e) => setUsarRecorte(e.target.checked)} />
-              Usar la imagen sin fondo
-            </label>
-          )}
+
+          {aviso && <p className="rounded-2xl bg-warn px-4 py-3 text-sm">{aviso}</p>}
 
           <PrendaForm datos={datos} onChange={setDatos} />
 
-          {aviso && <p className="rounded-xl bg-warn px-3 py-2 text-sm">{aviso}</p>}
-
-          <div className="flex gap-3">
-            <button onClick={() => setEstado("inicio")} className="flex-1 rounded-2xl border border-line py-3.5">
+          <div className="flex gap-3.5 pt-2">
+            <button onClick={() => setEstado("inicio")} className="h-15 flex-1 rounded-full bg-white shadow-suave">
               Otra foto
             </button>
             <button
               onClick={guardar}
               disabled={guardando}
-              className="flex-1 rounded-2xl bg-foreground py-3.5 font-medium text-background disabled:opacity-40"
+              className="h-15 flex-[2] rounded-full bg-moka font-medium text-white disabled:opacity-40"
             >
-              {guardando ? "Guardando…" : "Guardar"}
+              {guardando ? "Guardando…" : "Guardar en el armario"}
             </button>
           </div>
         </div>

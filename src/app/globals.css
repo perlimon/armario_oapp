@@ -1,25 +1,17 @@
 @import "tailwindcss";
 
+/* Paleta acordada: blanco roto, arena, moka y azul cielo como acento. */
 :root {
   --background: #faf8f5;
-  --foreground: #1c1a17;
-  --surface: #f0ece6;
-  --line: #ddd6cc;
-  --muted: #6f6a62;
+  --foreground: #3b2f27;
+  --surface: #efeae3;
+  --line: #e2dcd3;
+  --muted: #7a6553;
+  --moka: #7e6555;
+  --cielo: #a9c7e3;
+  --cielo-suave: #dce9f5;
   --warn: #f6e7c8;
   --danger: #b3261e;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #141311;
-    --foreground: #f1ede7;
-    --surface: #23211e;
-    --line: #3a3732;
-    --muted: #a39d93;
-    --warn: #4a3d1f;
-    --danger: #f2a49e;
-  }
 }
 
 @theme inline {
@@ -28,9 +20,14 @@
   --color-surface: var(--surface);
   --color-line: var(--line);
   --color-muted: var(--muted);
+  --color-moka: var(--moka);
+  --color-cielo: var(--cielo);
+  --color-cielo-suave: var(--cielo-suave);
   --color-warn: var(--warn);
   --color-danger: var(--danger);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-jost);
+  --shadow-suave: 0 6px 18px rgba(59, 47, 39, 0.08);
+  --shadow-flotante: 0 16px 40px rgba(59, 47, 39, 0.12);
 }
 
 body {
