@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { salir } from "@/components/Sesion";
 import { CATEGORIAS, etiqueta, type Categoria } from "@/lib/categories";
 import { listarPrendas, urlsDeImagenes, type Prenda } from "@/lib/prendas";
 
@@ -24,19 +23,14 @@ export default function Armario() {
   const visibles = prendas?.filter((p) => !filtro || p.categoria === filtro);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 pb-28 pt-6">
-      <header className="mb-5 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Mi armario</h1>
-          {prendas && (
-            <p className="text-muted">
-              {prendas.length} {prendas.length === 1 ? "prenda" : "prendas"}
-            </p>
-          )}
-        </div>
-        <button onClick={salir} className="mt-2 text-sm text-muted">
-          Salir
-        </button>
+    <main className="mx-auto max-w-5xl px-4 pb-28 pt-6 md:px-8">
+      <header className="mb-5">
+        <h1 className="text-3xl font-semibold tracking-tight">Mi armario</h1>
+        {prendas && (
+          <p className="text-muted">
+            {prendas.length} {prendas.length === 1 ? "prenda" : "prendas"}
+          </p>
+        )}
       </header>
 
       {error && <p className="mb-4 rounded-xl bg-warn px-3 py-2 text-sm">No se pudo cargar el armario: {error}</p>}
@@ -65,7 +59,7 @@ export default function Armario() {
         </div>
       )}
 
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {visibles?.map((p) => (
           <li key={p.id}>
             <Link href={`/prenda/${p.id}`} className="block">
