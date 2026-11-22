@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { IconoAtras, IconoCerrar, IconoEditar } from "@/components/Iconos";
 import { PrendaForm } from "@/components/PrendaForm";
 import { etiqueta, hexDeColor } from "@/lib/categories";
+import { useFondo } from "@/lib/fondo";
 import { actualizarPrenda, borrarPrenda, obtenerPrenda, urlsDeImagenes, type DatosPrenda, type Prenda } from "@/lib/prendas";
 
 const botonCristal = "flex size-13 items-center justify-center rounded-[18px] bg-white/70 backdrop-blur";
@@ -13,6 +14,7 @@ const botonCristal = "flex size-13 items-center justify-center rounded-[18px] bg
 export default function DetallePrenda({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const { fondo } = useFondo();
   const [prenda, setPrenda] = useState<Prenda | null>();
   const [datos, setDatos] = useState<DatosPrenda>();
   const [url, setUrl] = useState<string>();
@@ -70,8 +72,12 @@ export default function DetallePrenda({ params }: { params: Promise<{ id: string
 
   return (
     <main className="relative min-h-dvh bg-surface pt-[52dvh]">
-      <div className="absolute inset-x-0 top-0 flex h-[58dvh] items-center justify-center p-10 pt-24">
-        {url && <img src={url} alt={prenda?.nombre} className="h-full w-full object-contain" />}
+      <div className="absolute inset-x-0 top-0 h-[60dvh] overflow-hidden">
+        <img src={fondo.src} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover blur-md" />
+        <div className="absolute inset-0 bg-white/35" />
+        <div className="relative flex h-full items-center justify-center p-10 pt-24 pb-[10dvh]">
+          {url && <img src={url} alt={prenda?.nombre} className="h-full w-full object-contain drop-shadow-xl" />}
+        </div>
       </div>
 
       <div className="absolute inset-x-5 top-10 z-10 flex justify-between md:inset-x-12">
@@ -95,7 +101,7 @@ export default function DetallePrenda({ params }: { params: Promise<{ id: string
       {prenda && datos && (
         <section
           className={`relative min-h-[48dvh] rounded-t-[44px] px-6 pt-10 pb-12 md:px-12 ${
-            editando ? "bg-background" : "bg-moka/95 text-white"
+            editando ? "bg-background" : "bg-moka/90 text-white backdrop-blur-xl"
           }`}
         >
           {editando ? (

@@ -23,6 +23,8 @@ App web progresiva (Next.js) para digitalizar el armario y, en fases posteriores
 
 - Minimalista y neutro. Fondo blanco roto `#faf8f5`, tarjetas arena `#efeae3`, texto espresso `#3b2f27`, moka `#7e6555` para el botón principal y el panel de la ficha, azul cielo `#a9c7e3` como acento (botón +, subrayado del título, selección).
 - Letra Jost. Tarjetas altas muy redondeadas con el nombre sobre la foto; elementos blancos flotantes con sombra suave; barra inferior flotante.
+- Estilo de interfaz inspirado en apps de "smart home" que el usuario compartió: cabecera con foto de vestidor y panel moka translúcido (desenfoque), menú lateral moka, ficha de prenda sobre el vestidor desenfocado.
+- Fotos de vestidor en `public/fondos/` (inspiración de Pinterest del usuario, uso personal); se elige cuál desde el menú y se recuerda en `localStorage` (preferencia del dispositivo, no datos del armario).
 - Sin patrones de fondo, sin arcos, sin estética "femenina". Propuesta visual: https://claude.ai/artifact/GVwCBmE22LLpzZPsH94drW
 - La función de "veces puesta" queda para la Fase 3.
 

@@ -68,3 +68,17 @@ export const IconoCerrar = ({ size = 20 }: IconoProps) => (
     <path d="M6 6l12 12M18 6L6 18" />
   </svg>
 );
+
+export const IconoEstilo = ({ size = 22 }: IconoProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...trazo} aria-hidden="true">
+    <path d="M12 3l2.2 5.6L20 9.3l-4.4 3.9 1.3 5.8L12 16l-4.9 3 1.3-5.8L4 9.3l5.8-.7z" />
+  </svg>
+);
+
+export const IconoImagen = ({ size = 22 }: IconoProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...trazo} aria-hidden="true">
+    <rect x="3.5" y="4.5" width="17" height="15" rx="3" />
+    <path d="M3.5 16l5-4.5 4 3.5 3-2.5 5 4" />
+    <circle cx="15.5" cy="9" r="1.5" />
+  </svg>
+);
