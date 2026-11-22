@@ -93,3 +93,67 @@ export function pedirAlmacenamientoPersistente() {
 function extension(blob: Blob) {
   return blob.type === "image/webp" ? "webp" : blob.type === "image/png" ? "png" : "jpg";
 }
+
+// ── Copia de seguridad ──────────────────────────────────────────────
+// Un único archivo JSON con las prendas y sus fotos (como data URL), para
+// poder reinstalar la app o cambiar de dispositivo sin perder el armario.
+
+interface Copia {
+  app: "mystyle";
+  version: 1;
+  exportada: string;
+  prendas: Prenda[];
+  fotos: Record<string, string>;
+}
+
+export async function exportarCopia(): Promise<File> {
+  const prendas = await listarPrendas();
+  const fotos = await db.fotos.toArray();
+  const copia: Copia = {
+    app: "mystyle",
+    version: 1,
+    exportada: new Date().toISOString(),
+    prendas,
+    fotos: Object.fromEntries(await Promise.all(fotos.map(async (f) => [f.path, await aDataUrl(f.blob)] as const))),
+  };
+  const fecha = copia.exportada.slice(0, 10);
+  return new File([JSON.stringify(copia)], `mystyle-copia-${fecha}.json`, { type: "application/json" });
+}
+
+/** Añade las prendas de la copia; las que ya existen (mismo id) se dejan como están. */
+export async function importarCopia(archivo: Blob): Promise<{ nuevas: number; repetidas: number }> {
+  let copia: Copia;
+  try {
+    copia = JSON.parse(await archivo.text());
+  } catch {
+    throw new Error("El archivo no es una copia de MyStyle");
+  }
+  if (copia?.app !== "mystyle" || !Array.isArray(copia.prendas)) throw new Error("El archivo no es una copia de MyStyle");
+
+  const existentes = new Set(await db.prendas.toCollection().primaryKeys());
+  const nuevas = copia.prendas.filter((p) => !existentes.has(p.id));
+
+  const fotos: Foto[] = [];
+  for (const p of nuevas) {
+    for (const path of new Set([p.imagen_path, p.original_path])) {
+      const dataUrl = copia.fotos[path];
+      if (!dataUrl) throw new Error(`Falta la foto de "${p.nombre || p.id}" en la copia`);
+      fotos.push({ path, blob: await (await fetch(dataUrl)).blob() });
+    }
+  }
+
+  await db.transaction("rw", db.prendas, db.fotos, async () => {
+    await db.fotos.bulkPut(fotos);
+    await db.prendas.bulkAdd(nuevas);
+  });
+  return { nuevas: nuevas.length, repetidas: copia.prendas.length - nuevas.length };
+}
+
+function aDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onload = () => resolve(lector.result as string);
+    lector.onerror = () => reject(lector.error);
+    lector.readAsDataURL(blob);
+  });
+}

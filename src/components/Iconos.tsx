@@ -82,3 +82,10 @@ export const IconoImagen = ({ size = 22 }: IconoProps) => (
     <circle cx="15.5" cy="9" r="1.5" />
   </svg>
 );
+
+export const IconoCopia = ({ size = 22 }: IconoProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...trazo} aria-hidden="true">
+    <path d="M12 4v10M8 10l4 4 4-4" />
+    <path d="M4.5 15v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3" />
+  </svg>
+);

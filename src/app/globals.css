@@ -26,6 +26,7 @@
   --color-warn: var(--warn);
   --color-danger: var(--danger);
   --font-sans: var(--font-jost);
+  --font-logo: var(--font-cormorant);
   --shadow-suave: 0 6px 18px rgba(59, 47, 39, 0.08);
   --shadow-flotante: 0 16px 40px rgba(59, 47, 39, 0.12);
 }

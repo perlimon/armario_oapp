@@ -17,12 +17,13 @@ App web progresiva (Next.js) para digitalizar el armario y, en fases posteriores
 - Recorte de fondo en el dispositivo con `@imgly/background-removal`, modelo `isnet_quint8` (el más ligero), salida WebP.
 - Las fotos se reducen a 900 px antes de guardar para que 100 prendas ocupen ~15–25 MB.
 - Se pide almacenamiento persistente (`navigator.storage.persist`) para que Safari no borre los datos.
+- Copia de seguridad: el menú exporta/importa un JSON con prendas y fotos (`exportarCopia`/`importarCopia` en `src/lib/prendas.ts`). En iOS, borrar la app de la pantalla de inicio borra sus datos: exportar antes.
 - Paso a Supabase: solo hay que reescribir `src/lib/prendas.ts` con las mismas funciones. Una versión ya hecha con Supabase (tabla, bucket, RLS y pantalla de entrada) está en el commit `7071344`.
 
 ## Diseño (acordado con el usuario)
 
 - Minimalista y neutro. Fondo blanco roto `#faf8f5`, tarjetas arena `#efeae3`, texto espresso `#3b2f27`, moka `#7e6555` para el botón principal y el panel de la ficha, azul cielo `#a9c7e3` como acento (botón +, subrayado del título, selección).
-- Nombre de la app: **MyStyle**. Logo: "MyStyle" en Jost Light blanco roto sobre moka, con una raya azul cielo debajo (iconos en `public/icon-*.png` y `src/app/*icon.png`).
+- Nombre de la app: **MyStyle**. Logo: "MyStyle" en Cormorant Garamond blanco roto sobre moka, con una raya azul cielo debajo (iconos en `public/icon-*.png` y `src/app/*icon.png`).
 - Letra Jost. Tarjetas altas muy redondeadas con el nombre sobre la foto; elementos blancos flotantes con sombra suave; barra inferior flotante.
 - Estilo de interfaz inspirado en apps de "smart home" que el usuario compartió: cabecera con foto de vestidor y panel moka translúcido (desenfoque), menú lateral moka, ficha de prenda sobre el vestidor desenfocado.
 - Fotos de vestidor en `public/fondos/` (inspiración de Pinterest del usuario, uso personal); se elige cuál desde el menú y se recuerda en `localStorage` (preferencia del dispositivo, no datos del armario).
