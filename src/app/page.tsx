@@ -118,15 +118,15 @@ export default function Armario() {
 
       {!!prendas?.length && (
         <>
-          <div className="mt-8 mb-6 flex items-center justify-between px-5 md:px-12">
-            <h2 className="text-xl font-medium">{filtro ? etiqueta(filtro) : "Todas las prendas"}</h2>
+          <div className="mt-8 mb-6 flex items-center justify-between gap-3 px-5 md:px-12">
+            <h2 className="text-lg font-medium sm:text-xl">{filtro ? etiqueta(filtro) : "Todas las prendas"}</h2>
             <div className="flex rounded-full bg-[#f4f1ec] p-1">
               {(["estantes", "cuadricula"] as const).map((v) => (
                 <button
                   key={v}
                   aria-pressed={vista === v}
                   onClick={() => setVista(v)}
-                  className={`h-10 rounded-full px-5 text-sm ${vista === v ? "bg-white shadow-suave" : "text-muted"}`}
+                  className={`h-10 rounded-full px-4 text-sm sm:px-5 ${vista === v ? "bg-white shadow-suave" : "text-muted"}`}
                 >
                   {v === "estantes" ? "Estantes" : "Cuadrícula"}
                 </button>

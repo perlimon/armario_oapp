@@ -127,7 +127,7 @@ export default function DetallePrenda({ params }: { params: Promise<{ id: string
 
               <div className="mt-7 border-t border-white/25 pt-6">
                 <p className="mb-4 text-lg">Detalles</p>
-                <div className="flex flex-wrap gap-3.5">
+                <div className="flex flex-wrap gap-3 sm:gap-3.5">
                   <Ficha titulo="Color" valor={prenda.colores.map(etiqueta).join(", ") || "—"} muestra={hexDeColor(prenda.colores[0] ?? "")} />
                   <Ficha titulo="Temporada" valor={prenda.temporadas.map(etiqueta).join(", ") || "—"} muestra="#a9c7e3" />
                   <Ficha titulo="Estilo" valor={prenda.estilos.map(etiqueta).join(", ") || "—"} muestra="#d8c3a5" />
@@ -152,7 +152,7 @@ export default function DetallePrenda({ params }: { params: Promise<{ id: string
 
 function Ficha({ titulo, valor, muestra }: { titulo: string; valor: string; muestra: string }) {
   return (
-    <div className="flex w-[132px] flex-col items-center gap-2 rounded-full bg-white/16 px-3 pt-3 pb-6 text-center">
+    <div className="flex w-[104px] flex-col items-center gap-2 rounded-full bg-white/16 px-2 pt-3 pb-6 text-center sm:w-[132px] sm:px-3">
       <span className="flex size-14 items-center justify-center rounded-full bg-white">
         <span className="size-6 rounded-full border border-line" style={{ background: muestra }} />
       </span>
