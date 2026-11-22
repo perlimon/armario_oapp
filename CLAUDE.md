@@ -18,6 +18,8 @@ App web progresiva (Next.js) para digitalizar el armario y, en fases posteriores
 - Las fotos se reducen a 900 px antes de guardar para que 100 prendas ocupen ~15–25 MB.
 - Se pide almacenamiento persistente (`navigator.storage.persist`) para que Safari no borre los datos.
 - Copia de seguridad: el menú exporta/importa un JSON con prendas y fotos (`exportarCopia`/`importarCopia` en `src/lib/prendas.ts`). En iOS, borrar la app de la pantalla de inicio borra sus datos: exportar antes.
+- Pinterest (Fase 2): varios tableros públicos con etiquetas (informal, elegante, otoño…). `src/app/api/tablero` resuelve el enlace (pin.it incluido) y lee el feed RSS `pinterest.com/<usuario>/<tablero>.rss` (≈25 pines más recientes, casi sin títulos). `src/app/api/pin-imagen` sirve las fotos de `i.pinimg.com` (sin CORS) para leer sus colores. Los tableros se guardan en el dispositivo.
+- Outfits (Fase 3), sin IA: `analizarLook` (src/lib/colores.ts) toma el color dominante de una franja del torso y otra de las piernas de cada pin; `generarOutfits` (src/lib/outfits.ts) busca las prendas de arriba/abajo de color más parecido, añade calzado y, en otoño/invierno, abrigo. Es una aproximación por colores.
 - Paso a Supabase: solo hay que reescribir `src/lib/prendas.ts` con las mismas funciones. Una versión ya hecha con Supabase (tabla, bucket, RLS y pantalla de entrada) está en el commit `7071344`.
 
 ## Diseño (acordado con el usuario)

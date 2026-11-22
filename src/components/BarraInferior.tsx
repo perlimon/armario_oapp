@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { IconoMas, IconoOutfits, IconoPercha } from "./Iconos";
 
-/** Barra flotante: armario, añadir prenda y (más adelante) outfits. */
+/** Barra flotante: armario, añadir prenda y outfits. */
 export function BarraInferior() {
   return (
     <nav className="fixed inset-x-0 bottom-6 z-10 mx-auto flex h-20 w-[min(540px,calc(100%-32px))] items-center justify-around rounded-full bg-white shadow-flotante">
@@ -16,10 +16,10 @@ export function BarraInferior() {
       >
         <IconoMas />
       </Link>
-      <span className="flex min-w-22 flex-col items-center gap-0.5 text-xs text-muted" aria-disabled="true">
+      <Link href="/outfits" className="flex min-w-22 flex-col items-center gap-0.5 text-xs text-foreground">
         <IconoOutfits />
-        Outfits · pronto
-      </span>
+        Outfits
+      </Link>
     </nav>
   );
 }

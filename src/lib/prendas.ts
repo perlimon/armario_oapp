@@ -28,14 +28,49 @@ interface Foto {
   blob: Blob;
 }
 
+export interface Pin {
+  id: string;
+  enlace: string;
+  /** Foto del pin en Pinterest. */
+  imagen: string;
+  titulo: string;
+  /** Colores del look (nombres de la paleta), calculados en el dispositivo. */
+  arriba?: string;
+  abajo?: string;
+}
+
+export interface Tablero {
+  id: string;
+  url: string;
+  titulo: string;
+  etiquetas: string[];
+  pins: Pin[];
+  actualizado: string;
+}
+
+export interface Outfit {
+  id: string;
+  prendas: string[];
+  pinId?: string;
+  tableroId?: string;
+  creado: string;
+}
+
 const db = new Dexie("armario") as Dexie & {
   prendas: EntityTable<Prenda, "id">;
   fotos: EntityTable<Foto, "path">;
+  tableros: EntityTable<Tablero, "id">;
+  outfits: EntityTable<Outfit, "id">;
 };
 
 db.version(1).stores({
   prendas: "id, creada_en",
   fotos: "path",
+});
+
+db.version(2).stores({
+  tableros: "id",
+  outfits: "id, creado",
 });
 
 export async function listarPrendas(): Promise<Prenda[]> {
@@ -94,6 +129,36 @@ function extension(blob: Blob) {
   return blob.type === "image/webp" ? "webp" : blob.type === "image/png" ? "png" : "jpg";
 }
 
+// ── Tableros de Pinterest ───────────────────────────────────────────
+
+export async function listarTableros(): Promise<Tablero[]> {
+  return db.tableros.toArray();
+}
+
+export async function guardarTablero(tablero: Tablero) {
+  await db.tableros.put(tablero);
+}
+
+export async function borrarTablero(id: string) {
+  await db.tableros.delete(id);
+}
+
+// ── Outfits guardados ───────────────────────────────────────────────
+
+export async function listarOutfits(): Promise<Outfit[]> {
+  return db.outfits.orderBy("creado").reverse().toArray();
+}
+
+export async function guardarOutfit(outfit: Omit<Outfit, "id" | "creado">): Promise<Outfit> {
+  const nuevo = { ...outfit, id: crypto.randomUUID(), creado: new Date().toISOString() };
+  await db.outfits.add(nuevo);
+  return nuevo;
+}
+
+export async function borrarOutfit(id: string) {
+  await db.outfits.delete(id);
+}
+
 // ── Copia de seguridad ──────────────────────────────────────────────
 // Un único archivo JSON con las prendas y sus fotos (como data URL), para
 // poder reinstalar la app o cambiar de dispositivo sin perder el armario.
@@ -104,6 +169,8 @@ interface Copia {
   exportada: string;
   prendas: Prenda[];
   fotos: Record<string, string>;
+  tableros?: Tablero[];
+  outfits?: Outfit[];
 }
 
 export async function exportarCopia(): Promise<File> {
@@ -115,6 +182,8 @@ export async function exportarCopia(): Promise<File> {
     exportada: new Date().toISOString(),
     prendas,
     fotos: Object.fromEntries(await Promise.all(fotos.map(async (f) => [f.path, await aDataUrl(f.blob)] as const))),
+    tableros: await db.tableros.toArray(),
+    outfits: await db.outfits.toArray(),
   };
   const fecha = copia.exportada.slice(0, 10);
   return new File([JSON.stringify(copia)], `mystyle-copia-${fecha}.json`, { type: "application/json" });
@@ -142,9 +211,13 @@ export async function importarCopia(archivo: Blob): Promise<{ nuevas: number; re
     }
   }
 
-  await db.transaction("rw", db.prendas, db.fotos, async () => {
+  const tablerosExistentes = new Set(await db.tableros.toCollection().primaryKeys());
+  const outfitsExistentes = new Set(await db.outfits.toCollection().primaryKeys());
+  await db.transaction("rw", [db.prendas, db.fotos, db.tableros, db.outfits], async () => {
     await db.fotos.bulkPut(fotos);
     await db.prendas.bulkAdd(nuevas);
+    await db.tableros.bulkAdd((copia.tableros ?? []).filter((t) => !tablerosExistentes.has(t.id)));
+    await db.outfits.bulkAdd((copia.outfits ?? []).filter((o) => !outfitsExistentes.has(o.id)));
   });
   return { nuevas: nuevas.length, repetidas: copia.prendas.length - nuevas.length };
 }

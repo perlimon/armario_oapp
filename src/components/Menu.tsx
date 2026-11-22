@@ -96,14 +96,14 @@ export function Menu({ abierto, onCerrar, prendas }: { abierto: boolean; onCerra
             <IconoMas size={22} />
             Añadir prenda
           </Link>
-          <span className={`${fila} text-white/60`}>
+          <Link href="/outfits" className={fila}>
             <IconoOutfits size={22} />
-            Outfits · pronto
-          </span>
-          <span className={`${fila} text-white/60`}>
+            Outfits
+          </Link>
+          <Link href="/estilo" className={fila}>
             <IconoEstilo />
-            Mi estilo · pronto
-          </span>
+            Mi estilo
+          </Link>
         </div>
 
         <div className="mt-auto border-t border-white/20 pt-5">
