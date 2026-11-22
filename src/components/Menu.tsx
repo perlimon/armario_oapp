@@ -34,7 +34,7 @@ export function Menu({ abierto, onCerrar, prendas }: { abierto: boolean; onCerra
       >
         <div className="mb-8 flex items-start justify-between">
           <div>
-            <p className="text-2xl font-medium">Mi armario</p>
+            <p className="text-[28px] font-light tracking-tight">MyStyle</p>
             {prendas !== undefined && <p className="mt-1 text-sm font-light text-[#f1e9e1]">{prendas} prendas</p>}
             <div className="mt-3 h-[3px] w-11 rounded-full bg-cielo" />
           </div>

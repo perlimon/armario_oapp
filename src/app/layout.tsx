@@ -10,9 +10,9 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "Armario",
+  title: "MyStyle",
   description: "Tu armario digital y generador de outfits",
-  appleWebApp: { capable: true, title: "Armario", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "MyStyle", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

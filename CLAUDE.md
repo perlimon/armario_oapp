@@ -1,4 +1,4 @@
-# Armario — instrucciones para Claude
+# MyStyle (armario) — instrucciones para Claude
 
 App web progresiva (Next.js) para digitalizar el armario y, en fases posteriores, proponer outfits según el estilo de Pinterest. Plan completo: https://claude.ai/artifact/QrdVF3HoWZuEyQbjsNXhEB
 
@@ -22,6 +22,7 @@ App web progresiva (Next.js) para digitalizar el armario y, en fases posteriores
 ## Diseño (acordado con el usuario)
 
 - Minimalista y neutro. Fondo blanco roto `#faf8f5`, tarjetas arena `#efeae3`, texto espresso `#3b2f27`, moka `#7e6555` para el botón principal y el panel de la ficha, azul cielo `#a9c7e3` como acento (botón +, subrayado del título, selección).
+- Nombre de la app: **MyStyle**. Logo: "MyStyle" en Jost Light blanco roto sobre moka, con una raya azul cielo debajo (iconos en `public/icon-*.png` y `src/app/*icon.png`).
 - Letra Jost. Tarjetas altas muy redondeadas con el nombre sobre la foto; elementos blancos flotantes con sombra suave; barra inferior flotante.
 - Estilo de interfaz inspirado en apps de "smart home" que el usuario compartió: cabecera con foto de vestidor y panel moka translúcido (desenfoque), menú lateral moka, ficha de prenda sobre el vestidor desenfocado.
 - Fotos de vestidor en `public/fondos/` (inspiración de Pinterest del usuario, uso personal); se elige cuál desde el menú y se recuerda en `localStorage` (preferencia del dispositivo, no datos del armario).

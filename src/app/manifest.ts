@@ -2,12 +2,12 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Armario",
-    short_name: "Armario",
+    name: "MyStyle",
+    short_name: "MyStyle",
     description: "Tu armario digital y generador de outfits",
     start_url: "/",
     display: "standalone",
-    background_color: "#faf8f5",
+    background_color: "#7e6555",
     theme_color: "#faf8f5",
     lang: "es",
     icons: [
